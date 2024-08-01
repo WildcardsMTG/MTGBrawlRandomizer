@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+
+<body>
+    <div id="inputContainer">
+        <label id="inputLabel" for="myfile">Select a file:</label>
+        <input type="file" id="fileIn" name="myfile" accept=".csv" onchange="parseMTGCollection()">
+        <button id="refreshButton" onclick="parseMTGCollection()" >Re-randomize</button>
+    </div>
+    <div id="cardImageContainer"></div>
+</body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+    function parseMTGCollection() {
+        fileIn = document.getElementById("fileIn");
+        file = fileIn.files[0];
+
+        document.getElementById('cardImageContainer').innerText = 'Randomizing Card...';
+
+        if (file) {
+            Papa.parse(file, {
+                header: true,
+                dynamicTyping: true,
+                complete: function(results) {
+                    fetch("Legal_Brawl_Commanders.json")
+                    .then(response => response.json())
+                    .then(json => {
+                        var validCards = [];
+                        console.log(results);
+                        json.data.forEach(card => {
+                            results.data.forEach(col_card => {
+                                //console.log("Card 1: " + card.name + " Card 2: " + col_card.Card);
+
+                                if (card.name === col_card.Card) {
+                                    validCards.push(card.name);
+                                }
+                            });
+                        });
+
+                        console.log(validCards);
+
+                        cardNum = Math.floor(Math.random() * (validCards.length));
+                        
+                        fetch(`https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(validCards[cardNum])}`)
+                        .then((response) => {
+                            if (response.ok) {
+                                response.json()
+                                .then((cardData) => {
+                                    document.getElementById('cardImageContainer').innerText = '';
+                                    displayCardImage(cardData);
+                                });
+                            } else {
+                                document.getElementById('cardImageContainer').innerText = 'Card not found';
+                            }
+                        });
+
+                    });
+                }
+            });
+        } else {
+            document.getElementById('cardImageContainer').innerText = 'No File Found';
+        }
+    }
+
+    function displayCardImage(card) {
+        const cardImageContainer = document.getElementById('cardImageContainer');
+        
+        // Clear any previous content
+        cardImageContainer.innerHTML = '';
+        
+        // Create image element
+        const img = document.createElement('img');
+        img.src = card.image_uris.normal;
+        img.alt = card.name;
+        
+        // Append image to the container
+        cardImageContainer.appendChild(img);
+    }
+</script>
+
+</html>

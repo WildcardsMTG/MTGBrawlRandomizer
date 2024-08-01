@@ -1,0 +1,41 @@
+input {
+
+}
+  
+input::file-selector-button {
+    font-weight: bold;
+    color: dodgerblue;
+    padding: 0.5em;
+    border: thin solid grey;
+    border-radius: 3px;
+}
+
+#inputContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 1.5em;
+    padding-top: 1.5em;
+    border-bottom: 1px solid #000;
+}
+
+#inputLabel {
+    padding-right: 1em;
+    font-size: large;
+}
+
+#cardImageContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 3em;
+}
+
+#refreshButton {
+    font-weight: bold;
+    color: dodgerblue;
+    padding: 0.5em;
+    border: thin solid grey;
+    border-radius: 3px;
+}
+  
